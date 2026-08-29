@@ -20,3 +20,8 @@ variable "image_tag" {
   type        = string
   default     = "latest"
 }
+
+variable "github_repository" {
+  description = "GitHub repository path in the format 'owner/repo-name'"
+  type        = string
+}
