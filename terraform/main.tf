@@ -43,7 +43,8 @@ resource "google_cloud_run_v2_service" "service" {
     }
 
     containers {
-      image = "${var.region}-docker.pkg.dev/${var.project_id}/${google_artifact_registry_repository.repo.repository_id}/${var.service_name}:${var.image_tag}"
+      # Bootstrap with Google's public hello image; CI/CD will deploy the real image
+      image = "us-docker.pkg.dev/cloudrun/container/hello"
 
       ports {
         container_port = 8080
@@ -74,6 +75,15 @@ resource "google_cloud_run_v2_service" "service" {
         period_seconds = 10
       }
     }
+  }
+
+  # Prevent Terraform from reverting image tags updated by GitHub Actions
+  lifecycle {
+    ignore_changes = [
+      template[0].containers[0].image,
+      client,
+      client_version
+    ]
   }
 
   depends_on = [google_artifact_registry_repository.repo]
